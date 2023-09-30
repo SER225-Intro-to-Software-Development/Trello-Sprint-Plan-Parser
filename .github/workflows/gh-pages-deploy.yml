@@ -12,6 +12,6 @@ jobs:
     - id: Build-Vue
       uses: xRealNeon/VuePagesAction@1.0.1
       with:
-        username: 'SER225-Intro-to-Software-Development'
+        username: 'a-r-t'
         reponame: 'Trello-Sprint-Plan-Parser'
         token: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
