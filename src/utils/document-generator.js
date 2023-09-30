@@ -1,19 +1,25 @@
-const { Document, HeadingLevel, Packer, Paragraph, TextRun } = require('docx')
-const { saveAs } = require('file-saver')
+const { Document, HeadingLevel, Paragraph, TextRun } = require('docx')
 
 const generateDocumentForSprintPlan = (trelloJson, sprintPlanColumnName) => {
-  const lists = trelloJson.lists
-  const sprintPlanList = lists.find(list => stripString(list.name) === stripString(sprintPlanColumnName))
-  if (sprintPlanList) {
-    const id = sprintPlanList.id
-    const cards = trelloJson.cards
-    const cardsInSprintPlanList = cards.filter(card => card.idList === id).map(card => formatCard(card, trelloJson))
-    const document = createDocument(cardsInSprintPlanList)
-    return Packer.toBlob(document)
-      .then(blob => {
-        saveAs(blob, "example.docx");
-      })
-  }
+  return new Promise((resolve, reject) => {
+    const lists = trelloJson.lists
+    if (!lists) {
+      reject(new Error('Unable to parse Trello JSON lists. This appears to be invalid Trello JSON. Please ensure you are pasting it in correctly.'))
+    }
+    const sprintPlanList = lists.find(list => stripString(list.name) === stripString(sprintPlanColumnName))
+    if (sprintPlanList) {
+      const id = sprintPlanList.id
+      const cards = trelloJson.cards
+      const cardsInSprintPlanList = cards.filter(card => card.idList === id).map(card => formatCard(card, trelloJson))
+      try {
+        resolve(createDocument(cardsInSprintPlanList))
+      }
+      catch(err) {
+        reject(new Error(`${err.message} (Unable to parse Trello JSON. This appears to be invalid Trello JSON. Please ensure you are pasting it in correctly.)`))
+      }
+    }
+    reject(new Error(`Cannot find Sprint Plan List column '${sprintPlanColumnName}' in Trello board`))
+  })
 }
 
 const stripString = (str) => str.trim().toLowerCase().replace(/\s/g, '')
