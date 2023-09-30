@@ -1,113 +1,28 @@
 <template>
 <div>
-  <h1>Trello Sprint Plan Parser</h1>
-  <div class="trello-json-container">
-    <p class="trello-json-label">Trello JSON:</p>
-    <input type="text" class="trello-json-input" v-model="trelloJsonString" />
-  </div>
-  <div class="trello-json-container">
-    <p class="trello-json-label">Sprint Plan Column Name:</p>
-    <input type="text" class="trello-json-input" v-model="sprintPlanColumnName"/>
-  </div>
-  <template v-if="!isLoading">
-    <button type="button" class="convert-to-document-button" @click="convertToDocument">Convert to Document</button>
-    <p class="error-message" v-if="errorMessage">Error: {{errorMessage}}</p>
-  </template>
-  <template v-else>
-    <div class="loader"></div>
-  </template>
+  <h1>SER225 Trello Sprint Plan Parser</h1>
+  <ConverterTool/>
+  <hr class="separator">
+  <Instructions/>
 </div>
 </template>
 
 <script>
-const { generateDocumentForSprintPlan } = require('../utils/document-generator')
-const { Packer} = require('docx')
-const { saveAs } = require('file-saver')
+import ConverterTool from '../components/ConverterTool'
+import Instructions from '../components/Instructions'
 
 export default {
   name: 'Home',
-  data: () => {
-    return {
-      isLoading: false,
-      trelloJsonString: '',
-      sprintPlanColumnName: '',
-      errorMessage: ''
-    }
-  },
-  methods: {
-    convertToDocument() {
-      this.errorMessage = ''
-
-      if (!this.trelloJsonString || !this.sprintPlanColumnName) {
-        this.errorMessage = 'Text inputs cannot be empty'
-        return
-      }
-
-      let trelloJson
-      try {
-        trelloJson = JSON.parse(this.trelloJsonString)
-      }
-      catch(err) {
-        this.errorMessage = 'Trello JSON is not valid'
-        return
-      }
-
-      this.isLoading = true
-      
-      // generate and save word document
-      return generateDocumentForSprintPlan(trelloJson, this.sprintPlanColumnName)
-        .then(document => Packer.toBlob(document))
-        .then(blob => saveAs(blob, "example.docx"))
-        .catch(err => {
-          this.errorMessage = err.message
-        })
-        .finally(() => {
-          this.isLoading = false
-        })
-    }
+  components: {
+    ConverterTool,
+    Instructions
   }
 }
 </script>
 
-
 <style>
-.trello-json-container {
-  display: flex;
-  flex-direction: row;
-  gap: 5px;
-  align-items: center;
-}
-
-.trello-json-label {
-
-}
-
-.trello-json-input {
-  height: 20px;
-}
-
-.convert-to-document-button {
-  width: 200px;
-  height: 50px;
-  font-size: 15px;
-  margin-top: 20px;
-}
-
-.error-message {
-  color: red;
-}
-
-.loader {
-  border: 16px solid #f3f3f3; /* Light grey */
-  border-top: 16px solid #3498db; /* Blue */
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 2s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.separator {
+  margin-top: 50px;
+  margin-bottom: 50px;
 }
 </style>
