@@ -6,9 +6,6 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build"
   },
-  "engines": {
-    "node": "16.x"
-  },
   "dependencies": {
     "@vue/compiler-sfc": "^3.3.4",
     "axios": "^1.5.1",
