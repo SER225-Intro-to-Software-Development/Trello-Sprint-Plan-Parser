@@ -13,5 +13,5 @@ jobs:
       uses: xRealNeon/VuePagesAction@1.0.1
       with:
         username: 'a-r-t'
-        reponame: 'SER225-Project-Website'
+        reponame: 'Trello-Sprint-Plan-Parser'
         token: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
