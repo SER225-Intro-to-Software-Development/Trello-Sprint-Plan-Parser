@@ -5,10 +5,13 @@ on:
       - master
 jobs:
   build_vue:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     name: Build Vue
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/setup-node@v3
+      with:
+        node-version: '16.20.2'
     - run: |
         node --version
         npm install
