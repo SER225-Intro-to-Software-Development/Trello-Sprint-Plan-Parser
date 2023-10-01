@@ -5,7 +5,7 @@ on:
       - master
 jobs:
   build_vue:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     name: Build Vue
     steps:
     - uses: actions/checkout@v2
