@@ -12,7 +12,8 @@ const generateDocumentForSprintPlan = (trelloJson, sprintPlanColumnName) => {
       const cards = trelloJson.cards
       const cardsInSprintPlanList = cards.filter(card => card.idList === id).map(card => formatCard(card, trelloJson))
       try {
-        resolve(createDocument(cardsInSprintPlanList))
+        const boardUrl = trelloJson.url
+        resolve(createDocument(boardUrl, cardsInSprintPlanList))
       }
       catch(err) {
         reject(new Error(`${err.message} (Unable to parse Trello JSON. This appears to be invalid Trello JSON. Please ensure you are pasting it in correctly.)`))
@@ -35,7 +36,7 @@ const formatCard = (card, trelloJson) => {
       }
     }),
     description: card.desc,
-    cardUrl: card.url,
+    url: card.url,
     labels: card.labels.map(cardLabel => {
       const labelInfo = trelloJson.labels.find(label => label.id === cardLabel.id)
       return {
@@ -46,11 +47,34 @@ const formatCard = (card, trelloJson) => {
   }
 }
 
-const createDocument = (cardsInSprintPlanList) => {
+const createDocument = (boardUrl, cardsInSprintPlanList) => {
   return new Document({
     sections: [{
       properties: {},
-      children: cardsInSprintPlanList.map(card => createCardDocumentSection(card)).flat()
+      children: [
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: 'Board URL: ',
+              bold: true,
+              size: '14pt'
+            }),
+            new TextRun({
+              text: boardUrl,
+              size: '14pt'
+            })
+          ]
+        }),
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: '\n',
+              size: '14pt'
+            })
+          ]
+        }),
+        ...cardsInSprintPlanList.map(card => createCardDocumentSection(card)).flat()
+      ]
     }]
   })
 }
@@ -60,6 +84,27 @@ const createCardDocumentSection = (card) => {
     new Paragraph({
       text: card.title,
       heading: HeadingLevel.HEADING_1,
+    }),
+    new Paragraph({
+      children: [
+        new TextRun({
+          text: '\n',
+          size: '14pt'
+        })
+      ]
+    }),
+    new Paragraph({
+      children: [
+        new TextRun({
+          text: 'URL: ',
+          bold: true,
+          size: '14pt'
+        }),
+        new TextRun({
+          text: card.url,
+          size: '14pt'
+        })
+      ]
     }),
     new Paragraph({
       children: [
