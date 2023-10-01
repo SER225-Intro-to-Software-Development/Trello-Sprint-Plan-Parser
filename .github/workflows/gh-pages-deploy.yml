@@ -9,7 +9,7 @@ jobs:
     name: Build Vue
     steps:
     - uses: actions/checkout@v2
-      run: |
+    - run: |
         npm install
         npm run build
         cd dist
