@@ -13,3 +13,5 @@ The way the class works, teams must plan their Sprint out and create user storie
 ## How to use this generator tool to convert a Trello board into a Sprint planning document
 
 Usage instructions are included right on the home page of the website underneath the tool itself. It essentially involves moving all new Sprint tasks to their own column, and then grabbing the Trello board's JSON representation (which is very easily obtained) -- from there, paste the information into the fields and hit the button to generate and download the Sprint planning Word document.
+
+Note: this has ONLY been tested in Google Chrome -- hopefully other browsers work as well though!
