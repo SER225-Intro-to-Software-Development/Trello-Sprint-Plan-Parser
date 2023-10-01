@@ -23,5 +23,5 @@ jobs:
         git init
         git add -A
         git commit -m 'deploy'
-        git push -f https://a-r-t:${{ secrets.GITHUB_TOKEN }}@github.com/a-r-t/Trello-Sprint-Plan-Parser.git master:gh-pages
+        git push -f https://a-r-t:${{ secrets.GITHUB_TOKEN }}@github.com/SER225-Intro-to-Software-Development/Trello-Sprint-Plan-Parser.git master:gh-pages
       shell: bash
