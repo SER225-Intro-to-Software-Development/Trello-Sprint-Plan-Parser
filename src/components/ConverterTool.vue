@@ -77,10 +77,6 @@ export default {
   align-items: center;
 }
 
-.trello-json-label {
-
-}
-
 .trello-json-input {
   height: 20px;
 }

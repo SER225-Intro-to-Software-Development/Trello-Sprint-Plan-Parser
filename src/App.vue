@@ -18,10 +18,6 @@ export default {
   font-family: 'Roboto', sans-serif
 }
 
-body {
-  /* margin: 0 !important; */
-}
-
 .no-margin {
   margin: 0px;
 }
