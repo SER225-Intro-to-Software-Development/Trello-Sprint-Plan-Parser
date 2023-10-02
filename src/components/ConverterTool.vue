@@ -56,7 +56,11 @@ export default {
       // generate and save word document
       return generateDocumentForSprintPlan(trelloJson, this.sprintPlanColumnName)
         .then(document => Packer.toBlob(document))
-        .then(blob => saveAs(blob, "example.docx"))
+        .then(blob => {
+          const date = new Date() // today's date
+          const formattedDateString = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 )).toISOString().split('T')[0] // format date as yyyy-mm-dd, the extra logic is to ensure timezones don't get in the way
+          return saveAs(blob, `Sprint_Plan_${formattedDateString}.docx`)
+        })
         .catch(err => {
           this.errorMessage = err.message
         })
