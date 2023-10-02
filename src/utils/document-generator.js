@@ -122,7 +122,7 @@ const createCardDocumentSection = (card) => {
           size: '14pt'
         }),
         new TextRun({
-          text: card.assignedTo.map(member => member.name ? member.name : member.username).join(', '),
+          text: card.assignedTo.length > 0 ? card.assignedTo.map(member => member.name ? member.name : member.username).join(', ') : 'N/A',
           size: '14pt'
         })
       ]
@@ -143,7 +143,7 @@ const createCardDocumentSection = (card) => {
           size: '14pt'
         }),
         new TextRun({
-          text: card.labels.map(label => `${label.name ? label.name : '<Unnamed>'} (${label.color})`).join(', '),
+          text: card.labels.length > 0 ? card.labels.map(label => `${label.name ? label.name : '<Unnamed>'} (${label.color})`).join(', ') : 'N/A',
           size: '14pt'
         })
       ]
