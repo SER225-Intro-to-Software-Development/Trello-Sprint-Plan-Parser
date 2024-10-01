@@ -37,7 +37,6 @@
 
 export default {
   name: 'Instructions'
-
 }
 </script>
 
