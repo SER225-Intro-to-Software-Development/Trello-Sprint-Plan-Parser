@@ -8,7 +8,7 @@ This is a website for converting my students' Sprint Plans for their Quinnipiac'
 
 The way the class works, teams must plan their Sprint out and create user stories on their Trello boards prior to getting the official "okay" to start working on it. I then require students to essentially submit a document containing "snapshot" of their Sprint user stories from their Trello board to Blackboard in order for me to have it on record -- since Trello boards will be updated as the Sprint goes on, I require this record in the case that either I or the team need to refer back to the original plan. Additionally, I use a grade on this Blackboard submission to mark that I have "officially" approved a team to move forward with their Sprint plan.
 
-...However, the one problem with this system is that my students essentially have to essentially copy/pasting or screenshotting all of their Trello tasks to a document, which is a waste of their valuable time. In order to make this easier on my students, I created this website that will automatically transform their Trello board Sprint tasks into a Word document that is ready to be submitted to Blackboard right out of the gate.
+...However, the one problem with this system is that my students have to essentially copy/pasting or screenshotting all of their Trello tasks to a document, which is a waste of their valuable time. In order to make this easier on my students, I created this website that will automatically transform their Trello board Sprint tasks into a Word document that is ready to be submitted to Blackboard right out of the gate.
 
 ## How to use this generator tool to convert a Trello board into a Sprint planning document
 
