@@ -1,3 +1,8 @@
+<script setup lang="ts">
+import ConverterTool from '../components/ConverterTool.vue'
+import Instructions from '../components/Instructions.vue'
+</script>
+
 <template>
 <div>
   <h1>SER225 Trello Sprint Plan Parser</h1>
@@ -6,19 +11,6 @@
   <Instructions/>
 </div>
 </template>
-
-<script>
-import ConverterTool from '../components/ConverterTool'
-import Instructions from '../components/Instructions'
-
-export default {
-  name: 'Home',
-  components: {
-    ConverterTool,
-    Instructions
-  }
-}
-</script>
 
 <style>
 .separator {

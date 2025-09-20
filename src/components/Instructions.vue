@@ -33,13 +33,6 @@
 </div>
 </template>
 
-<script>
-
-export default {
-  name: 'Instructions'
-}
-</script>
-
 <style>
 .step {
   margin-top: 50px;

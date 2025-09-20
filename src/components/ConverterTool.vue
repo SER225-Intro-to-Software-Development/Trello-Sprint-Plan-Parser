@@ -1,77 +1,88 @@
-<template>
-<div>
-  <div class="trello-json-container">
-    <p class="trello-json-label">Trello JSON:</p>
-    <input type="text" class="trello-json-input" v-model="trelloJsonString" />
-  </div>
-  <div class="trello-json-container">
-    <p class="trello-json-label">Sprint Plan Column Name:</p>
-    <input type="text" class="trello-json-input" v-model="sprintPlanColumnName"/>
-  </div>
-  <template v-if="!isLoading">
-    <button type="button" class="convert-to-document-button" @click="convertToDocument">Convert to Document</button>
-    <p class="error-message" v-if="errorMessage">Error: {{errorMessage}}</p>
-  </template>
-  <template v-else>
-    <div class="loader"></div>
-  </template>
-</div>
-</template>
+<script setup lang="ts">
+import { ref } from 'vue'
+import { generateDocumentForSprintPlan } from '../utils/document-generator.js'
+import { Packer, Document } from 'docx'
+import { saveAs } from 'file-saver'
+import type { TrelloData } from '@/utils/trello-types.js'
 
-<script>
-const { generateDocumentForSprintPlan } = require('../utils/document-generator')
-const { Packer} = require('docx')
-const { saveAs } = require('file-saver')
+// reactive state
+const isLoading = ref<boolean>(false)
+const trelloJsonString = ref<string>('')
+const sprintPlanColumnName = ref<string>('')
+const errorMessage = ref<string>('')
 
-export default {
-  name: 'ConverterTool',
-  data: () => {
-    return {
-      isLoading: false,
-      trelloJsonString: '',
-      sprintPlanColumnName: '',
-      errorMessage: ''
+// function to handle document conversion
+const convertToDocument = async (): Promise<void> => {
+  errorMessage.value = ''
+
+  if (!trelloJsonString.value || !sprintPlanColumnName.value) {
+    errorMessage.value = 'Text inputs cannot be empty'
+    return
+  }
+
+  let trelloJson
+  try {
+    trelloJson = JSON.parse(trelloJsonString.value) as TrelloData
+  } catch (err) {
+    errorMessage.value = 'Trello JSON is not valid'
+    return
+  }
+
+  isLoading.value = true
+
+  try {
+    // assuming generateDocumentForSprintPlan returns a docx Document
+    const document: Document = generateDocumentForSprintPlan(
+      trelloJson,
+      sprintPlanColumnName.value
+    )
+    const blob: Blob = await Packer.toBlob(document)
+
+    const date = new Date()
+    const formattedDateString = new Date(
+      date.getTime() - date.getTimezoneOffset() * 60000
+    )
+      .toISOString()
+      .split('T')[0]
+
+    saveAs(blob, `Sprint_Plan_${formattedDateString}.docx`)
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      errorMessage.value = err.message
+    } else {
+      errorMessage.value = 'An unknown error occurred'
     }
-  },
-  methods: {
-    convertToDocument() {
-      this.errorMessage = ''
-
-      if (!this.trelloJsonString || !this.sprintPlanColumnName) {
-        this.errorMessage = 'Text inputs cannot be empty'
-        return
-      }
-
-      let trelloJson
-      try {
-        trelloJson = JSON.parse(this.trelloJsonString)
-      }
-      catch(err) {
-        this.errorMessage = 'Trello JSON is not valid'
-        return
-      }
-
-      this.isLoading = true
-      
-      // generate and save word document
-      return generateDocumentForSprintPlan(trelloJson, this.sprintPlanColumnName)
-        .then(document => Packer.toBlob(document))
-        .then(blob => {
-          const date = new Date() // today's date
-          const formattedDateString = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 )).toISOString().split('T')[0] // format date as yyyy-mm-dd, the extra logic is to ensure timezones don't get in the way
-          return saveAs(blob, `Sprint_Plan_${formattedDateString}.docx`)
-        })
-        .catch(err => {
-          this.errorMessage = err.message
-        })
-        .finally(() => {
-          this.isLoading = false
-        })
-    }
+  } finally {
+    isLoading.value = false
   }
 }
 </script>
 
+<template>
+  <div>
+    <div class="trello-json-container">
+      <p class="trello-json-label">Trello JSON:</p>
+      <input type="text" class="trello-json-input" v-model="trelloJsonString" />
+    </div>
+    <div class="trello-json-container">
+      <p class="trello-json-label">Sprint Plan Column Name:</p>
+      <input type="text" class="trello-json-input" v-model="sprintPlanColumnName"/>
+    </div>
+    <template v-if="!isLoading">
+      <button 
+        type="button" 
+        class="convert-to-document-button" 
+        @click="convertToDocument"
+      >
+        Convert to Document
+      </button>
+      <p class="error-message" v-if="errorMessage">Error: {{ errorMessage }}</p>
+    </template>
+    <template v-else>
+      <div class="loader"></div>
+    </template>
+  </div>
+</template>
 
 <style>
 .trello-json-container {

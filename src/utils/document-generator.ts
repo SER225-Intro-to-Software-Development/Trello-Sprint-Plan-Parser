@@ -1,38 +1,52 @@
-const { Document, HeadingLevel, Paragraph, TextRun } = require('docx')
+import type { Card2, TrelloData } from './trello-types'
+import { Document, HeadingLevel, Paragraph, TextRun } from 'docx'
 
-const generateDocumentForSprintPlan = (trelloJson, sprintPlanColumnName) => {
-  return new Promise((resolve, reject) => {
-    const lists = trelloJson.lists
-    if (!lists) {
-      reject(new Error('Unable to parse Trello JSON lists. This appears to be invalid Trello JSON. Please ensure you are pasting it in correctly.'))
-    }
-    const sprintPlanList = lists.find(list => stripString(list.name) === stripString(sprintPlanColumnName))
-    if (sprintPlanList) {
-      const id = sprintPlanList.id
-      const cards = trelloJson.cards
-      const cardsInSprintPlanList = cards.filter(card => card.idList === id).map(card => formatCard(card, trelloJson))
-      try {
-        const boardUrl = trelloJson.url
-        resolve(createDocument(boardUrl, cardsInSprintPlanList))
-      }
-      catch(err) {
-        reject(new Error(`${err.message} (Unable to parse Trello JSON. This appears to be invalid Trello JSON. Please ensure you are pasting it in correctly.)`))
-      }
-    }
-    reject(new Error(`Cannot find Sprint Plan List column '${sprintPlanColumnName}' in Trello board`))
-  })
+interface FormattedCardInSprintPlanList {
+  title: string;
+  assignedTo: {
+    name: string | undefined;
+    username: string | undefined;
+  }[];
+  description: string;
+  url: string;
+  labels: {
+    name: string | undefined;
+    color: string | undefined;
+  }[];
 }
 
-const stripString = (str) => str.trim().toLowerCase().replace(/\s/g, '')
 
-const formatCard = (card, trelloJson) => {
+export const generateDocumentForSprintPlan = (trelloJson: TrelloData, sprintPlanColumnName: string) => {
+  const lists = trelloJson.lists
+  if (!lists) {
+    throw new Error('Unable to parse Trello JSON lists. This appears to be invalid Trello JSON. Please ensure you are pasting it in correctly.')
+  }
+  const sprintPlanList = lists.find(list => stripString(list.name) === stripString(sprintPlanColumnName))
+  if (sprintPlanList) {
+    const id = sprintPlanList.id
+    const cards = trelloJson.cards
+    const cardsInSprintPlanList = cards.filter(card => card.idList === id).map(card => formatCard(card, trelloJson))
+    try {
+      const boardUrl = trelloJson.url
+      return createDocument(boardUrl, cardsInSprintPlanList)
+    }
+    catch(err: any) {
+      throw new Error(`${err.message} (Unable to parse Trello JSON. This appears to be invalid Trello JSON. Please ensure you are pasting it in correctly.)`)
+    }
+  }
+  throw new Error(`Cannot find Sprint Plan List column '${sprintPlanColumnName}' in Trello board`)
+}
+
+const stripString = (str: string) => str.trim().toLowerCase().replace(/\s/g, '')
+
+const formatCard = (card: Card2, trelloJson: TrelloData) => {
   return {
     title: card.name,
     assignedTo: card.idMembers.map(idMember => {
       const memberInfo = trelloJson.members.find(member => member.id === idMember)
       return {
-        name: memberInfo.fullName,
-        username: memberInfo.username
+        name: memberInfo?.fullName,
+        username: memberInfo?.username
       }
     }),
     description: card.desc,
@@ -40,14 +54,14 @@ const formatCard = (card, trelloJson) => {
     labels: card.labels.map(cardLabel => {
       const labelInfo = trelloJson.labels.find(label => label.id === cardLabel.id)
       return {
-        name: labelInfo.name,
-        color: labelInfo.color
+        name: labelInfo?.name,
+        color: labelInfo?.color
       }
     })
   }
 }
 
-const createDocument = (boardUrl, cardsInSprintPlanList) => {
+const createDocument = (boardUrl: string, cardsInSprintPlanList: FormattedCardInSprintPlanList[]) => {
   return new Document({
     sections: [{
       properties: {},
@@ -79,7 +93,7 @@ const createDocument = (boardUrl, cardsInSprintPlanList) => {
   })
 }
 
-const createCardDocumentSection = (card) => {
+const createCardDocumentSection = (card: FormattedCardInSprintPlanList) => {
   return [
     new Paragraph({
       text: card.title,
@@ -186,4 +200,3 @@ const createCardDocumentSection = (card) => {
   ]
 }
 
-module.exports = { generateDocumentForSprintPlan }
